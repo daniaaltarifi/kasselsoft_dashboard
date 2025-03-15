@@ -72,6 +72,10 @@ import AddTypeOfPortfolio from "./pages/Portfolio/AddTypeOfPortfolio.jsx";
 import UpdateTypeOfPortfolio from "./pages/Portfolio/UpdateTypeOfPortfolio.jsx";
 import AddServicesPortfolio from "./pages/Portfolio/AddServicesPortfolio.jsx";
 import UpdateServicesPortfolio from "./pages/Portfolio/UpdateServicesPortfolio.jsx";
+import Categories from "./pages/Categories/Categories.js";
+import AddCategories from "./pages/Categories/AddCategories.js";
+import UpdateCategories from "./pages/Categories/UpdateCategories.js";
+import Courses from "./pages/Courses/Courses.js";
 const DirectionHandler = () => {
   const location = useLocation();
 
@@ -197,7 +201,10 @@ function App() {
               <Route path="/:lang/updateblackterms" element={<UpdateBlackTerms />} />
               <Route path="/:lang/addblueterms" element={<AddBlueTerms />} />
               <Route path="/:lang/updateblueterms" element={<UpdateBlueTerms />} />
-
+              <Route path="/:lang/categories" element={<Categories />} />
+              <Route path="/:lang/AddCategory" element={<AddCategories />} />
+              <Route path="/:lang/Updatecategory/:id" element={<UpdateCategories />} />
+              <Route path="/:lang/courses" element={<Courses/>} />
 
               <Route path="/:lang/infContact" element={<InfContact />} />
               <Route path="/:lang/updatefooter" element={<UpdateFooterContact />} />
@@ -233,6 +240,7 @@ function App() {
              <Route path="/:lang/addservicesportfolio" element={<AddServicesPortfolio />} />
              <Route path="/:lang/updateservicesportfolio" element={<UpdateServicesPortfolio />} />
 
+          
             </Routes>
           </main>
         </div>

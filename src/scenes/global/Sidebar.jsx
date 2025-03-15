@@ -216,6 +216,20 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
+            <Item
+              title={lang === "ar" ? "خدماتنا" : "Categories Of  Courses"}
+              to={`/${lang}/categories`}
+              icon={<DesignServicesIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+               <Item
+              title={lang === "ar" ? "خدماتنا" : "Courses"}
+              to={`/${lang}/courses`}
+              icon={<DesignServicesIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
             {/* termsandcondition */}
             <Item
               title={lang === "ar" ? "الشروط والاحكام" : "Terms and Condition"}
