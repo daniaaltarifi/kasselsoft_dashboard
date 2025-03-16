@@ -24,7 +24,7 @@ const UpdateCategories = () => {
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const response = await axios.get(`http://localhost:9090/categories/getcategoriesById/${id}`);
+        const response = await axios.get(`${API_URL}/categories/getcategoriesById/${id}`);
         setCategory(response.data);
         console.log(response.data)
       } catch (error) {

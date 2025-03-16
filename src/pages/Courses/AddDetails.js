@@ -23,19 +23,19 @@ import {
   InputLabel,
   FormHelperText,
 } from "@mui/material";
-const AddCourses = () => {
+const AddDetails = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const { lang } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const API_URL = process.env.REACT_APP_API_URL;
   const [img, setImg] = useState(null);
-  const [categories, setCategories] = useState([]);
+  const [courses, setcourses] = useState([]);
   const [category_id, setCategory_id] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [addedCourseId, setAddedCourseId] = useState(null);
   
-  const [courses, setcourses] = useState([]);
+  const [detailscourses, setdetailscourses] = useState([]);
   const [alert, setAlert] = useState({
     open: false,
     message: "",
@@ -45,18 +45,17 @@ const AddCourses = () => {
   // Fetch data when cardhomeId changes
   useEffect(() => {
     window.scrollTo(0, 0);
-    const fetchCategories = async () => {
+    const fetchcourses = async () => {
       try {
-        const response = await axios.get(
-          `${API_URL}/categories/Allcategories/en`
+        const response = await axios.get(`${API_URL}/courses/Allcourses/en`
         );
-        setCategories(response.data);
+        setcourses(response.data);
       } catch (err) {
-        console.error("Error fetching categories:", err);
+        console.error("Error fetching courses:", err);
       }
     };
 
-    fetchCategories();
+    fetchcourses();
   }, []);
 
   const handleFormSubmit = async (values) => {
@@ -69,13 +68,11 @@ const AddCourses = () => {
     }
     try {
       const formData = new FormData();
-      formData.append("title", values.title);
-      formData.append("description", values.description);
-      formData.append("category_id", values.category_id);
-      formData.append("image", img);
-      formData.append("lang", lang);
+      formData.append("Explanations", values.Explanations);
+      formData.append("course_id", values.course_id);
+      formData.append("Videos", img);
       const response = await axios.post(
-        `${API_URL}/courses/addCourse`,
+        `${API_URL}/DetailsCourse/addDetails`,
         formData,
         {
           headers: {
@@ -84,20 +81,16 @@ const AddCourses = () => {
         }
       );
 
-      setcourses(response.data);
-      const newCourseId = response.data.id;
+      setdetailscourses(response.data);
       setAlert({
         open: true,
         message: lang === "ar" ? "تمت الاضافة بنجاح" : "Added successful!",
         severity: "success",
       });
+
       setTimeout(() => {
-        setOpenDialog(true);
-        setAddedCourseId(newCourseId); // Store the course ID
-      }, 1000);
-      // setTimeout(() => {
-      //   navigate(`/${lang}/courses`);
-      // }, 1500);
+        navigate(`/${lang}/courses`);
+      }, 1500);
     } catch (error) {
       console.log(`Error fetching post data ${error}`);
     }
@@ -107,20 +100,13 @@ const AddCourses = () => {
     setImg(e.target.files[0]);
   };
 
-  const handleNavigate = (addDetails) => {
-    setOpenDialog(false);
-    if (addDetails) {
-      navigate(`/${lang}/add-course-details/${addedCourseId}`); // Redirect to video & explanation form
-    } else {
-      navigate(`/${lang}/courses`); // Redirect to course list
-    }
-  };
+
   
   return (
     <Box m="20px">
       <Header
         title={lang === "ar" ? "اضافة دورة" : "Add Course"}
-        subtitle={lang === "ar" ? "بيانات الخدمات" : "List of courses"}
+        subtitle={lang === "ar" ? "بيانات الخدمات" : "List of detailscourses"}
       />
 
       {alert.open && (
@@ -149,9 +135,8 @@ const AddCourses = () => {
         onSubmit={handleFormSubmit}
         validationSchema={checkoutSchema}
         initialValues={{
-          title: courses.title || "",
-          description: courses.description || "",
-          category_id: courses.category_id || "",
+          Explanations: detailscourses.Explanations || "",
+          course_id: detailscourses.course_id || "",
         }}
       >
         {({
@@ -175,7 +160,7 @@ const AddCourses = () => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label={lang === "ar" ? "العنوان" : "Title"}
+                label={lang === "ar" ? "الشرح" : "Explanations"}
                 InputLabelProps={{
                   sx: {
                     textAlign: lang === "ar" ? "right" : "left",
@@ -183,40 +168,19 @@ const AddCourses = () => {
                     left: lang === "ar" ? "auto" : 0,
                   },
                 }}
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.title} // Correct usage of Formik values
-                name="title"
-                error={!!touched.title && !!errors.title}
-                helperText={touched.title && errors.title}
-              />
-
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label={lang === "ar" ? "الوصف" : "Description"}
-                InputLabelProps={{
-                  sx: {
-                    textAlign: lang === "ar" ? "right" : "left",
-                    right: lang === "ar" ? 15 : "auto",
-                    left: lang === "ar" ? "auto" : 0,
-                  },
-                }}
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.description} // Correct usage of Formik values
-                name="description"
-                error={!!touched.description && !!errors.description}
-                helperText={touched.description && errors.description}
-                sx={{ gridColumn: "span 2" }}
+                rows={10}
                 multiline
-                rows={8}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.Explanations} // Correct usage of Formik values
+                name="Explanations"
+                error={!!touched.Explanations && !!errors.Explanations}
+                helperText={touched.Explanations && errors.Explanations}
               />
               <FormControl
                 fullWidth
                 variant="filled"
-                error={!!touched.category_id && !!errors.category_id}
+                error={!!touched.course_id && !!errors.course_id}
                 sx={{
                   gridColumn: "span 2",
                   "& .MuiInputLabel-root": {
@@ -229,29 +193,29 @@ const AddCourses = () => {
                   },
                 }}
               >
-                <InputLabel>{lang === "ar" ? "الصنف" : "Category"}</InputLabel>
+                <InputLabel>{lang === "ar" ? "الدورة" : "course"}</InputLabel>
                 <Select
-                  label={lang === "ar" ? "الصنف" : "Category"}
+                  label={lang === "ar" ? "الدورة" : "course"}
                   onBlur={handleBlur}
                   onChange={(e) => {
                     handleChange(e);
                   }}
-                  value={values.category_id}
-                  name="category_id"
+                  value={values.course_id}
+                  name="course_id"
                 >
-                  {categories.map((catg) => (
-                    <MenuItem key={catg.id} value={catg.id}>
-                      {lang === "ar" ? catg.categoryName : catg.categoryName}
+                  {courses.map((course) => (
+                    <MenuItem key={course.id} value={course.id}>
+                      {lang === "ar" ? course.title : course.title}
                     </MenuItem>
                   ))}
                 </Select>
                 <FormHelperText>
-                  {touched.category_id && errors.category_id}
+                  {touched.course_id && errors.course_id}
                 </FormHelperText>
               </FormControl>
               <TextField
                 sx={{ gridColumn: "span 4", paddingTop: "20px" }}
-                label={lang === "ar" ? "الصورة" : "Img"}
+                label={lang === "ar" ? "الفيديو" : "Video"}
                 InputLabelProps={{
                   sx: {
                     textAlign: lang === "ar" ? "right" : "left",
@@ -272,34 +236,14 @@ const AddCourses = () => {
           </form>
         )}
       </Formik>
-      <Dialog open={openDialog} onClose={() => handleNavigate(false)}>
-        <DialogTitle>
-          {lang === "ar" ? "إضافة تفاصيل الدورة؟" : "Add Course Details?"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {lang === "ar"
-              ? "هل تريد إضافة فيديو وشرح لهذه الدورة الآن؟"
-              : "Do you want to add a video and explanation for this course now?"}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => handleNavigate(false)} color="primary">
-            {lang === "ar" ? "تخطي" : "Skip"}
-          </Button>
-          <Button onClick={() => handleNavigate(true)} color="secondary">
-            {lang === "ar" ? "نعم، أضف التفاصيل" : "Yes, Add Details"}
-          </Button>
-        </DialogActions>
-      </Dialog>
+   
     </Box>
   );
 };
 
 const checkoutSchema = yup.object().shape({
-  title: yup.string().required("Title is required"),
-  description: yup.string().required("Description is required"),
-  category_id: yup.string().required("Category is required"), // Fix this field name
+  Explanations: yup.string().required("Explanations is required"),
+  course_id: yup.string().required("course_id is required"), // Fix this field name
 });
 
-export default AddCourses;
+export default AddDetails;

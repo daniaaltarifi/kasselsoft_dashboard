@@ -76,6 +76,12 @@ import Categories from "./pages/Categories/Categories.js";
 import AddCategories from "./pages/Categories/AddCategories.js";
 import UpdateCategories from "./pages/Categories/UpdateCategories.js";
 import Courses from "./pages/Courses/Courses.js";
+import AddCourses from "./pages/Courses/AddCourses.js";
+import AddCourseDetails from "./pages/Courses/AddCourseDetails.js";
+import UpdateCourses from "./pages/Courses/UpdateCourses.js";
+import UpdateDetailsCourse from "./pages/Courses/UpdateDetailsCourse.js";
+import AddDetailsCourse from "./pages/Courses/AddDetails.js";
+import AddDetails from "./pages/Courses/AddDetails.js";
 const DirectionHandler = () => {
   const location = useLocation();
 
@@ -205,6 +211,11 @@ function App() {
               <Route path="/:lang/AddCategory" element={<AddCategories />} />
               <Route path="/:lang/Updatecategory/:id" element={<UpdateCategories />} />
               <Route path="/:lang/courses" element={<Courses/>} />
+              <Route path="/:lang/addcourse" element={<AddCourses />} />
+              <Route path="/:lang/add-course-details/:course_id" element={<AddCourseDetails />} />
+              <Route path="/:lang/Updatecourse" element={<UpdateCourses />} />
+              <Route path="/:lang/updatedetailscourse" element={<UpdateDetailsCourse />} />
+              <Route path="/:lang/adddetails" element={<AddDetails />} />
 
               <Route path="/:lang/infContact" element={<InfContact />} />
               <Route path="/:lang/updatefooter" element={<UpdateFooterContact />} />

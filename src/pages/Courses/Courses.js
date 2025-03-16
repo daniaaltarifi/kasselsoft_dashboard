@@ -14,19 +14,21 @@ function Courses() {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { lang } = useParams();
-  const API_URL = 'http://localhost:9090';
+  const API_URL = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [open, setOpen] = useState(false);
   const [currentId, setCurrentId] = useState(null);
+  const [deleteType, setDeleteType] = useState(null); // 'blog' or 'description'
 
-  const handleClickOpen = (id) => {
+  const handleClickOpen = (id,type) => {
     setCurrentId(id);
+    setDeleteType(type); // Set the type to either 'blog' or 'description'
     setOpen(true);
   };
 
   const handleUpdate = (id) => {
-    navigate(`/${lang}/Updatecourse/${id}`);
+    navigate(`/${lang}/Updatecourse`, { state: { id } });
   };
 
   const columns = [
@@ -43,10 +45,53 @@ function Courses() {
       minWidth: 250,
     },
     {
-      field: "lang",
-      headerName: lang === "ar" ? "اللغة" : "Language",
-      flex: 0.5,
-      minWidth: 100,
+      field: "details",
+      headerName: lang === "ar" ? "التفاصيل" : "details",
+
+      minWidth: 600,
+      renderCell: (params) => (
+        <Box
+          sx={{
+            maxHeight: 50,
+            overflowY: "auto",
+            whiteSpace: "normal", // Allow text to wrap
+            wordBreak: "break-word",
+          }}
+        >
+          {" "}
+          {/* Set maxHeight and overflow */}
+          {params.row.details &&
+            params.row.details.map((detail,index) => (
+              <Box
+              key={`${params.row.id}-${detail.id}-${index}`} // Add index if necessary
+              display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography variant="body2" marginTop={4}>
+                  {detail.explanation}
+
+                  {/* {desc.description} */}
+                </Typography>
+                <Typography
+                  color={colors.redAccent[400]}
+                  sx={{ ml: "5px", cursor: "pointer", marginTop: 4 }}
+                  onClick={() => handleClickOpen(detail.id, "details")} // Specify type as 'description'
+                >
+                  <DeleteOutlineIcon />
+                </Typography>
+                <Typography
+                  color={colors.greenAccent[400]} // Change color as needed
+                  sx={{ ml: "5px", cursor: "pointer", marginTop: 4 }}
+                  onClick={() => handleEditDetails(detail.id)} // Pass blog.id here
+                  >
+                  <BorderColorIcon />
+                </Typography>
+               
+              </Box>
+            ))}
+        </Box>
+      ),
     },
     {
       field: "actions_delete",
@@ -57,7 +102,7 @@ function Courses() {
           <Typography
             color={colors.redAccent[400]}
             sx={{ cursor: "pointer" }}
-            onClick={() => handleClickOpen(params.row.id)}
+            onClick={() => handleClickOpen(params.row.id,"course")}
           >
             <DeleteOutlineIcon />
           </Typography>
@@ -87,6 +132,7 @@ function Courses() {
       try {
         const response = await axios.get(`${API_URL}/courses/Allcourses/en`);
         setCourses(response.data);
+        console.log("first course", response.data)
       } catch (err) {
         console.error("Error fetching courses:", err);
       }
@@ -97,18 +143,38 @@ function Courses() {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`${API_URL}/courses/deleteCourse/${currentId}`);
-      setCourses(prev => prev.filter(course => course.id !== currentId));
-      handleClose();
+      if (deleteType === "course") {
+        await axios.delete(`${API_URL}/courses/deleteCourse/${currentId}`);
+          setCourses(prev => prev.filter(course => course.id !== currentId));
+
+      } else if (deleteType === "details") {
+        await axios.delete(`${API_URL}/DetailsCourse/deleteDetails/${currentId}`);
+        // Optionally, update the descriptions in the specific blog
+        setCourses((prevData) =>
+          prevData.map((course) => {
+            if (course.details) {
+              return {
+                ...course,
+                details: course.details.filter(
+                  (det) => det.id !== currentId
+                ),
+              };
+            }
+            return course;
+          })
+        );
+      }
+      handleClose(); // Close the modal after deletion
     } catch (error) {
-      console.error("Error deleting course:", error);
+      console.error("Error deleting:", error);
     }
   };
-
   const handleClose = () => {
     setOpen(false);
   };
-
+  const handleEditDetails=(id)=>{
+    navigate(`/${lang}/updatedetailscourse`, { state: { id } });
+  }
   return (
     <Box m="20px">
       <Header
@@ -157,7 +223,22 @@ function Courses() {
         >
           {lang === "ar" ? "إضافة دورة" : "Add Course"}
         </Button>
-
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: colors.lightBlue[900],
+            color: "#fafafa",
+            "&:hover": { backgroundColor: colors.lightBlue[700] },
+            padding: "10px 45px",
+            fontSize: "16px",
+            fontWeight: "bold",
+            mb: 2,
+            marginLeft:"10px"
+          }}
+          onClick={() => navigate(`/${lang}/adddetails`)}
+        >
+          {lang === "ar" ? "إضافة تفاصيل الدورة" : "Add Details Course"}
+        </Button>
         <DataGrid
           rows={courses}
           columns={columns}
